@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+   			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+  		
+  	
+	<bean id="messageQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/myJMS/MessageQueue"></property>
+	</bean>
+
+	<bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/myJMS/ConnectionFactory"></property>
+	</bean>
+	
+	<bean id="receiveMessageListener" class="org.shirdrn.spring.jms.integration.ReceiveMessageListener">
+		<property name="mailSenderServcie" ref="mailSenderService"></property>
+	</bean>
+	
+	<bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory"></property>
+		<property name="destination" ref="messageQueue"></property>
+		<property name="messageListener" ref="receiveMessageListener"></property>
+	</bean>
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory"></property>
+		<property name="defaultDestination" ref="messageQueue"></property>
+	</bean>
+	
+	<bean id="messageSender" class="org.shirdrn.spring.jms.integration.MessageSender">
+		<property name="jmsTemplate" ref="jmsTemplate"></property>
+	</bean>
+	
+	<bean id="sendMessageController" class="org.shirdrn.spring.jms.integration.SendMeassageController">
+		<property name="messageSender" ref="messageSender" />
+		<property name="successView" value="/success" />
+	</bean>
+	
+	<!--Spring 默认的映射响应器,根据 <bean> 的 name 属性查找控制器处理请求-->
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<!-- <prop key="/url模板 .do">控制器 <bean>的id</prop> -->
+				<prop key="/sendMessage.do">sendMessageController</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 配置试图解析器 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!--<property name="requestContextAttribute" value="rc" />-->
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 邮件发送器 org.springframework.mail.javamail.JavaMailSenderImpl -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.xxx.com" />
+		<property name="username" value="xxx@xxx.com.cn"></property>
+		<property name="password" value="xxx"></property>
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<property name="javaMailProperties">
+			<props>
+				<!-- 是否需要验证 -->
+				<prop key="mail.smtp.auth">true</prop>
+				<!-- 超时时间 -->
+				<prop key="mail.smtp.timeout">20000</prop>
+			</props>
+		</property>
+	</bean>
+
+   <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+      <property name="velocityProperties">
+         <value>
+          resource.loader=class
+          class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+         </value>
+      </property>
+   </bean>
+   
+   <bean id="mailSenderService" class="org.message.spring.mailSender.MailSenderServiceImpl">
+      <property name="mailSender" ref="mailSender"/>
+      <property name="velocityEngine" ref="velocityEngine"/>
+      <property name="from" value="xxx@xxx.com.cn"></property>
+      <property name="to" value="xxx@xxx.com.cn,xxx@163.com"></property>
+      <property name="subject" value="Message from JMS! No-Reply!"></property>
+      <property name="cc" value=","></property>
+   </bean>
+   
+</beans>

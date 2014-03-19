@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="JmsDemo"
+  id="myeclipse.1395127040863"
+  context-root="/JmsDemo"
+  j2ee-spec="5.0"
+  archive="JmsDemo.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
