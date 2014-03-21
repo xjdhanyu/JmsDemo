@@ -24,6 +24,7 @@ public class MailSenderServiceImpl implements MailSenderService{
 	private String to;
 	private String subject;
 	private String cc;
+	private String templateLocation;
 
 	@Override
 	public MessageResponse sendMessage(final UserMessage um) {
@@ -58,7 +59,7 @@ public class MailSenderServiceImpl implements MailSenderService{
 	            message.setCc(um.getCc());
 	            Map<String, Object> model = new HashMap<String, Object>();
 	            model.put("user", um);
-	            String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "org/message/spring/mailSender/email.vm","UTF-8",model);
+	            String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation,"UTF-8",model);
 	            message.setText(text, true);
 			}
 		};
@@ -95,6 +96,14 @@ public class MailSenderServiceImpl implements MailSenderService{
 
 	public void setCc(String cc) {
 		this.cc = cc;
+	}
+
+	public void setTemplateLocation(String templateLocation) {
+		this.templateLocation = templateLocation;
+	}
+
+	public String getTemplateLocation() {
+		return templateLocation;
 	}
 
 }

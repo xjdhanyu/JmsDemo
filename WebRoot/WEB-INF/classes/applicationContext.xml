@@ -14,7 +14,7 @@
 		<property name="jndiName" value="java:comp/env/myJMS/ConnectionFactory"></property>
 	</bean>
 	
-	<bean id="receiveMessageListener" class="org.shirdrn.spring.jms.integration.ReceiveMessageListener">
+	<bean id="receiveMessageListener" class="org.message.spring.jms.integration.ReceiveMessageListener">
 		<property name="mailSenderServcie" ref="mailSenderService"></property>
 	</bean>
 	
@@ -29,11 +29,11 @@
 		<property name="defaultDestination" ref="messageQueue"></property>
 	</bean>
 	
-	<bean id="messageSender" class="org.shirdrn.spring.jms.integration.MessageSender">
+	<bean id="messageSender" class="org.message.spring.jms.integration.MessageSender">
 		<property name="jmsTemplate" ref="jmsTemplate"></property>
 	</bean>
 	
-	<bean id="sendMessageController" class="org.shirdrn.spring.jms.integration.SendMeassageController">
+	<bean id="sendMessageController" class="org.message.spring.jms.integration.SendMessageController">
 		<property name="messageSender" ref="messageSender" />
 		<property name="successView" value="/success" />
 	</bean>
@@ -58,9 +58,9 @@
 
 	<!-- 邮件发送器 org.springframework.mail.javamail.JavaMailSenderImpl -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host" value="smtp.xxx.com" />
-		<property name="username" value="xxx@xxx.com.cn"></property>
-		<property name="password" value="xxx"></property>
+		<property name="host" value="smtp.dayang.com.cn" />
+		<property name="username" value="hanyu@dayang.com.cn"></property>
+		<property name="password" value="hanyu366"></property>
 		<property name="defaultEncoding" value="UTF-8"></property>
 		<property name="javaMailProperties">
 			<props>
@@ -84,10 +84,11 @@
    <bean id="mailSenderService" class="org.message.spring.mailSender.MailSenderServiceImpl">
       <property name="mailSender" ref="mailSender"/>
       <property name="velocityEngine" ref="velocityEngine"/>
-      <property name="from" value="xxx@xxx.com.cn"></property>
-      <property name="to" value="xxx@xxx.com.cn,xxx@163.com"></property>
+      <property name="from" value="hanyu@dayang.com.cn"></property>
+      <property name="to" value="hanyu@dayang.com.cn,xjdhanyu@163.com"></property>
       <property name="subject" value="Message from JMS! No-Reply!"></property>
       <property name="cc" value=","></property>
+      <property name="templateLocation" value="org/message/spring/mailSender/email.vm"></property>
    </bean>
    
 </beans>
